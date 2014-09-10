@@ -1,4 +1,4 @@
-(ns degree-planner.core
+(ns degree-planner.api
   (:require [liberator.core :refer [resource defresource]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.adapter.jetty :refer [run-jetty]]
