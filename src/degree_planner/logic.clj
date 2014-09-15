@@ -1,4 +1,4 @@
-(ns degree-planner.web
+(ns degree-planner.logic
   (:require [clojure.core.logic :as logic]
             [clojure.edn :refer [read-string]]))
 
