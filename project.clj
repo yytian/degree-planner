@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2322"]
                  [org.clojure/core.logic "0.8.8"]
+                 [org.clojure/core.async "0.1.338.0-5c5012-alpha"]
                  [liberator "0.12.0"]
                  [compojure "1.1.8"]
                  [ring/ring-jetty-adapter "1.2.2"]
@@ -20,7 +21,7 @@
         :dev
         {:source-paths ["src"]
          :compiler {
-            :output-to "cljs-debug.js"
+            :output-to "out/cljs-debug.js"
             :output-dir "out"
             :optimizations :whitespace
             :pretty-print true }}
