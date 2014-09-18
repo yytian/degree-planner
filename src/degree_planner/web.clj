@@ -2,6 +2,7 @@
   (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.handler :refer [site]]
             [compojure.route :as route]
+            [liberator.core :refer [resource defresource]]
             [clojure.java.io :as io]
             [ring.middleware.stacktrace :as trace]
             [ring.middleware.session :as session]
@@ -23,6 +24,8 @@
 (defroutes app
   (ANY "/repl" {:as req}
        (drawbridge req))
+  (ANY "/api/:dept" [dept] (resource :available-media-types ["text/html"]
+                                 :handle-ok (str "<html>" (slurp (str "data/courses/" dept "-courses.edn")) "</html>")))
   (GET "/" []
        {:status 200
         :headers {"Content-Type" "text/plain"}
