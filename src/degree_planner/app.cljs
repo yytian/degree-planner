@@ -1,6 +1,7 @@
 (ns degree-planner.app
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [om.core :as om :include-macros true]
+  (:require [degree-planner.logic :as logic]
+            [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [put! chan <!]]))
 
@@ -44,7 +45,7 @@
                                     (dom/input #js {:type "text" :ref "new-course"})
                                     (dom/button #js {:onClick #(add-course app owner)} "Add course"))
                            (dom/div nil
-                                    (dom/span nil "Check degree requirements"))))))
+                                    (dom/span nil (reduce str (map :id logic/cs-courses))))))))
 
 (om/root courses-view
          app-state

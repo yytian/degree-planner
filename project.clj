@@ -8,9 +8,10 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2322"]
                  [com.cognitect/transit-cljs "0.8.188"]
-                 [cljs-http "0.1.16"]
+                 [cljs-ajax "0.3.0"]
                  [org.clojure/core.async "0.1.338.0-5c5012-alpha"]
                  [liberator "0.12.0"]
+                 [io.clojure/liberator-transit "0.3.0"]
                  [compojure "1.1.8"]
                  [ring/ring-jetty-adapter "1.2.2"]
                  [ring/ring-devel "1.2.2"]
@@ -24,8 +25,7 @@
         :dev
         {:source-paths ["src"]
          :compiler {
-            :output-to "out/cljs-debug.js"
-            :output-dir "out"
+            :output-to "resources/public/js/cljs-debug.js"
             :optimizations :whitespace
             :pretty-print true }}
         :prod

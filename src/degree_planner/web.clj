@@ -3,12 +3,14 @@
             [compojure.handler :refer [site]]
             [compojure.route :as route]
             [liberator.core :refer [resource defresource]]
+            [io.clojure.liberator-transit]
             [clojure.java.io :as io]
             [ring.middleware.stacktrace :as trace]
             [ring.middleware.session :as session]
             [ring.middleware.session.cookie :as cookie]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.basic-authentication :as basic]
+            [ring.util.response :as resp]
             [cemerick.drawbridge :as drawbridge]
             [environ.core :refer [env]]))
 
@@ -21,25 +23,30 @@
       (session/wrap-session)
       (basic/wrap-basic-authentication authenticated?)))
 
+(def course-lists (reduce
+                   #(assoc %1 %2 (read-string (slurp (str "resources/data/courses/" %2 "-courses.edn"))))
+                   {}
+                   ["AMATH" "CS" "CO" "MATH" "PMATH" "STAT"]))
+
 (defroutes app
   (ANY "/repl" {:as req}
        (drawbridge req))
-  (ANY "/api/:dept" [dept] (resource :available-media-types ["text/html"]
-                                 :handle-ok (str "<html>" (slurp (str "data/courses/" dept "-courses.edn")) "</html>")))
-  (GET "/" []
-       {:status 200
-        :headers {"Content-Type" "text/plain"}
-        :body (pr-str ["Hello" :from 'Heroku])})
+  (ANY "/api/:dept" [dept] (resource :available-media-types ["application/transit+json"
+                                                             "application/transit+msgpack"
+                                                             "application/json"]
+                                     :handle-ok (get course-lists dept)))
+  (GET "/" [] (-> (resp/resource-response "index.html") (resp/content-type "text/html")))
+  (GET "/js/:script" [script] (-> (resp/resource-response (str "public/js/" script ".js")) (resp/content-type "application/javascript")))
   (ANY "*" []
        (route/not-found (slurp (io/resource "404.html")))))
 
 (defn wrap-error-page [handler]
   (fn [req]
     (try (handler req)
-         (catch Exception e
-           {:status 500
-            :headers {"Content-Type" "text/html"}
-            :body (slurp (io/resource "500.html"))}))))
+      (catch Exception e
+        {:status 500
+         :headers {"Content-Type" "text/html"}
+         :body (slurp (io/resource "500.html"))}))))
 
 (defn wrap-app [app]
   ;; TODO: heroku config:add SESSION_SECRET=$RANDOM_16_CHARS
@@ -55,5 +62,6 @@
     (jetty/run-jetty (wrap-app #'app) {:port port :join? false})))
 
 ;; For interactive development:
+;; (.start server)
 ;; (.stop server)
 ;; (def server (-main))

@@ -1,36 +1,35 @@
-;; load data using https://github.com/swannodette/transit-example
-
 (ns degree-planner.logic
   (:require [cognitect.transit :as transit]
-            [cljs-http.client :as http]))
+            [ajax.core :refer [GET POST]]
+            [clojure.set]))
 
 (defrecord Program [title constraints])
 
 (defrecord Constraint [title rules pred])
 
 (defn one-of [title list]
-  (Constraint. ~title
-                [:one-of ~list]
-                #(clojure.set/intersection (set %) (set ~list))))
+  (Constraint. title
+               [:one-of list]
+               #(clojure.set/intersection (set %) (set list))))
 
 (defn all-of [title list]
-  (Constraint. ~title
-                [:all-of ~list]
-                #(clojure.set/intersection (set %) (set ~list))))
+  (Constraint. title
+               [:all-of list]
+               #(clojure.set/intersection (set %) (set list))))
 
 ;; ranges should be a vector of vectors starting with a number (indicating number of courses to take) followed by courses
 ;; there's probably a way to do it with destructuring
 (defn from-ranges [title ranges]
-  (Constraint. ~title
-                ranges
-                ))
+  (Constraint. title
+               ranges
+               :placeholder))
 
-(def r (transit/reader :json))
+(def cs-courses [])
 
-(def cs-courses (transit/read r (http/get "../../resources/data/courses/CS-courses.edn")))
+(GET "api/CS" {:handler #(set! cs-courses %) })
 
 (defn course-range [source left right]
-  (->> ~source (map :id) (filter #(<= (compare % ~right) 0 (compare % ~left)))))
+  (->> source (map :id) (filter #(<= (compare % right) 0 (compare % left)))))
 
 (def bcs (Program. "Bachelor of Computer Science"
                    (let [core [:CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350]]
