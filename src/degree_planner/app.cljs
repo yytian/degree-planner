@@ -5,7 +5,7 @@
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [put! chan <!]]))
 
-(def app-state (atom {:courses #{"Lion" "Zebra" "Buffalo" "Antelope"}}))
+(def app-state (atom {:courses #{:CS135 :CS136 :MATH135}}))
 
 (defn course-view [course owner]
   (reify
@@ -37,15 +37,14 @@
     om/IRenderState
     (render-state [this {:keys [delete]}]
                   (dom/div nil
-                           (dom/input #js {:id "course-form"})
                            (apply dom/ul #js {:id "course-list"}
-                                  (om/build-all course-view (:courses app)
+                                  (om/build-all course-view (map name (:courses app))
                                                 {:init-state {:delete delete}}))
                            (dom/div nil
                                     (dom/input #js {:type "text" :ref "new-course"})
                                     (dom/button #js {:onClick #(add-course app owner)} "Add course"))
-                           (dom/div nil
-                                    (dom/span nil (reduce str (map :id logic/cs-courses))))))))
+                           (apply dom/ul #js {:id "all-courses"}
+                                    (om/build-all course-view (map #(name (:id %)) logic/cs-courses)))))))
 
 (om/root courses-view
          app-state
