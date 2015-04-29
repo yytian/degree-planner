@@ -5,15 +5,17 @@
 (defonce app-state (atom {:courses #{"CS135" "CS136" "MATH135" "MATH136"}
                       :new-course ""}))
 
-(defn transform-state [key transform]
-  (swap! app-state #((let [old-value (key %)]
-                       (assoc % key (transform old-value))))))
+(defn transform-state! [key transform]
+  (do
+    (swap! app-state #(let [old-value (key %)]
+                         (assoc % key (transform old-value))))
+    (rerender!)))
 
 (q/defcomponent CourseView [course]
   (d/div {:className "course"}
         (d/span nil course)
         (d/button {:className "btn btn-b btn-sm smooth"
-              :onClick (fn [e] (transform-state :courses #(disj % course)))} "Delete")))
+              :onClick (fn [e] (transform-state! :courses #(disj % course)))} "Delete")))
 
 (q/defcomponent CoursesView [courses]
   (d/div {:id "courses-view"}
@@ -21,11 +23,14 @@
          (d/div nil
                 (d/input {:type "text" :class "smooth" :ref "new-course"
                           :onKeyDown (fn [e] (let [v (.-value (.-target e))]
-                                               (transform-state :new-course (constantly v))))}))))
+                                               (transform-state! :new-course (constantly v))))}))))
 
 (q/defcomponent RootView [app]
   (d/div {:id "root"}
-         (CoursesView (:courses @app))))
+         (CoursesView (:courses app))))
 
-(q/render (RootView app-state)
-          (.getElementById js/document "my-app"))
+(defn rerender! []
+  (q/render (RootView @app-state)
+            (.getElementById js/document "my-app")))
+
+(rerender!)
