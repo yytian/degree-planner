@@ -6,20 +6,20 @@
   :license {:name "FIXME: choose"
             :url "http://example.com/FIXME"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2322"]
-                 [com.cognitect/transit-cljs "0.8.188"]
-                 [cljs-ajax "0.3.0"]
-                 [org.clojure/core.async "0.1.338.0-5c5012-alpha"]
+                 [org.clojure/clojurescript "0.0-3126"]
+                 [org.clojure/core.match "0.3.0-alpha4"]
+                 [com.cognitect/transit-cljs "0.8.207"]
+                 [cljs-ajax "0.3.11"]
+                 [clj-http "1.1.1"]
                  [liberator "0.12.0"]
                  [io.clojure/liberator-transit "0.3.0"]
-                 [compojure "1.1.8"]
-                 [ring/ring-jetty-adapter "1.2.2"]
-                 [ring/ring-devel "1.2.2"]
+                 [compojure "1.3.3"]
+                 [ring/ring-jetty-adapter "1.3.2"]
+                 [ring/ring-devel "1.3.2"]
                  [ring-basic-authentication "1.0.5"]
-                 [environ "0.5.0"]
-                 [com.cemerick/drawbridge "0.0.6"]
+                 [environ "1.0.0"]
                  [enlive "1.1.5"]
-                 [om "0.7.3"]]
+                 [quiescent "0.2.0-alpha1"]]
   :cljsbuild {
     :builds {
         :dev
@@ -36,8 +36,8 @@
             :pretty-print false}}}}
   :min-lein-version "2.0.0"
   :plugins [[environ/environ.lein "0.2.1"]
-            [lein-cljsbuild "1.0.3"]]
-  :hooks [environ.leiningen.hooks leiningen.cljsbuild]
+            [lein-cljsbuild "1.0.5"]]
+  :hooks [environ.leiningen.hooks]
   :main degree-planner.web
   :jvm-opts ["-Djava.awt.headless=true"]
   :source-paths ["src"]

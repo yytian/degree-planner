@@ -7,19 +7,7 @@
             [ring.middleware.session.cookie :as cookie]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.basic-authentication :as basic]
-            [cemerick.drawbridge :as drawbridge]
             [environ.core :refer [env]]))
-
-(defn- authenticated? [user pass]
-  ;; TODO: heroku config:add REPL_USER=[...] REPL_PASSWORD=[...]
-  (= [user pass] [(env :repl-user false) (env :repl-password false)]))
-
-(def ^:private drawbridge
-  (-> (drawbridge/ring-handler)
-      (session/wrap-session)
-      (basic/wrap-basic-authentication authenticated?)))
-
-
 
 (defn wrap-error-page [handler]
   (fn [req]

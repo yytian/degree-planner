@@ -29,5 +29,3 @@
   (doseq [dep ["CS" "MATH" "CO" "PMATH" "STAT" "AMATH"]]
     (with-open [wrtr (io/writer (str "data/courses/" dep "-courses.edn"))]
       (.write wrtr (pr-str (map #(read-course % dep) (courses dep)))))))
-
-(scrape)

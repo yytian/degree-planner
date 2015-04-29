@@ -1,51 +1,31 @@
 (ns degree-planner.app
-  (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [degree-planner.logic :as logic]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [cljs.core.async :refer [put! chan <!]]))
+  (:require [quiescent.core :as q]
+            [quiescent.dom :as d]))
 
-(def app-state (atom {:courses #{:CS135 :CS136 :MATH135}}))
+(defonce app-state (atom {:courses #{"CS135" "CS136" "MATH135" "MATH136"}
+                      :new-course ""}))
 
-(defn course-view [course owner]
-  (reify
-    om/IRenderState
-    (render-state [this {:keys [delete]}]
-                  (dom/li #js {:className "course"}
-                          (dom/span nil course)
-                          (dom/button #js {:onClick (fn [e] (put! delete course))} "Delete")))))
+(defn transform-state [key transform]
+  (swap! app-state #((let [old-value (key %)]
+                       (assoc % key (transform old-value))))))
 
-(defn add-course [app owner]
-  (let [new-course (-> (om/get-node owner "new-course")
-                       .-value)]
-    (when new-course
-      (om/transact! app :courses #(conj % new-course)))))
+(q/defcomponent CourseView [course]
+  (d/div {:className "course"}
+        (d/span nil course)
+        (d/button {:className "btn btn-b btn-sm smooth"
+              :onClick (fn [e] (transform-state :courses #(disj % course)))} "Delete")))
 
-(defn courses-view [app owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-                {:delete (chan)})
-    om/IWillMount
-    (will-mount [_]
-                (let [delete (om/get-state owner :delete)]
-                  (go (loop []
-                        (let [course (<! delete)]
-                          (om/transact! app :courses
-                                        #(disj % course))
-                          (recur))))))
-    om/IRenderState
-    (render-state [this {:keys [delete]}]
-                  (dom/div nil
-                           (apply dom/ul #js {:id "course-list"}
-                                  (om/build-all course-view (map name (:courses app))
-                                                {:init-state {:delete delete}}))
-                           (dom/div nil
-                                    (dom/input #js {:type "text" :ref "new-course"})
-                                    (dom/button #js {:onClick #(add-course app owner)} "Add course"))
-                           (apply dom/ul #js {:id "all-courses"}
-                                    (om/build-all course-view (map #(name (:id %)) logic/cs-courses)))))))
+(q/defcomponent CoursesView [courses]
+  (d/div {:id "courses-view"}
+         (apply d/ul {:className "courses"} (map CourseView courses))
+         (d/div nil
+                (d/input {:type "text" :class "smooth" :ref "new-course"
+                          :onKeyDown (fn [e] (let [v (.-value (.-target e))]
+                                               (transform-state :new-course (constantly v))))}))))
 
-(om/root courses-view
-         app-state
-         {:target (. js/document (getElementById "my-app"))})
+(q/defcomponent RootView [app]
+  (d/div {:id "root"}
+         (CoursesView (:courses @app))))
+
+(q/render (RootView app-state)
+          (.getElementById js/document "my-app"))
