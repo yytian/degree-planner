@@ -13,7 +13,7 @@
 
 (defn has-failures? [solutions]
   "Checks whether a list of Solutions has any unsatisfied"
-  (not-every? identity (map :satisfied solutions)))
+  (not-every? :satisfied solutions))
 
 (defn try-combinations [planned-courses title combinations constraints]
   "Returns a list of Solutions"
@@ -33,7 +33,9 @@
              (let [remaining-courses (difference planned-courses comb) ; after choosing first comb
                    first-combination-solutions (solve remaining-courses constraints)]
                (if (has-failures? first-combination-solutions)
-                 (recur planned-courses title combs constraints)
+                 (if (empty? combs)
+                   (conj first-combination-solutions (Solution. title true comb)) ; No other choice, might as well take one
+                   (recur planned-courses title combs constraints)) ; See if other combs might work
                  (conj first-combination-solutions (Solution. title true comb))))
              (recur planned-courses title combs constraints))))
 
@@ -50,8 +52,7 @@
 (defn rule->generator [rule-type course-set params]
   "Generators take in a list of planned courses and return a (possibly lazy) list of viable combinations"
   (match [rule-type course-set params]
-         [:one-of _ _] #(let [viable (intersection course-set %)]
-                          (if (empty? viable) '() (list viable)))
+         [:one-of _ _] #(combo/split-set (intersection course-set %))
          [:all-of _ _] #(if (subset? course-set %) (list course-set) '())
          [:n-of _ {:n n}] #(map set (combo/combinations (intersection course-set %) n))))
 

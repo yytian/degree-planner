@@ -117,3 +117,8 @@ to write our own version that considers the empty-list to be distinct"
                                         (list (seq items))
                                         (map #(map v-items %) (index-combinations t cnt))),
               :else (multi-comb items t))))))
+
+(defn split-set
+  "Returns a list of singleton sets from elements of the argument set"
+  [items]
+  (map #(set (list %)) items))
