@@ -21,7 +21,7 @@
   (d/div {:id "courses-view"}
          (apply d/ul {:className "courses"} (map CourseView courses))
          (d/div nil
-                (d/input {:type "text" :class "smooth" :ref "new-course"
+                (d/input {:type "text" :className "smooth" :ref "new-course"
                           :onKeyDown (fn [e] (let [v (.-value (.-target e))]
                                                (transform-state! :new-course (constantly v))))}))))
 

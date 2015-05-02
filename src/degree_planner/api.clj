@@ -14,7 +14,7 @@
                    departments))
 
 (defn course-range [source left right]
-  (->> source (map :id) (filter #(<= (compare % right) 0 (compare % left)))))
+  (set (->> source (map :id) (filter #(<= (compare % right) 0 (compare % left))))))
 
 (def bcs {:title "Bachelor of Computer Science"
           :rules (let [core #{:CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350}
@@ -48,5 +48,3 @@
   (GET "/js/:script" [script] (-> (resp/resource-response (str "public/js/" script ".js")) (resp/content-type "application/javascript")))
   (ANY "*" []
        (route/not-found (slurp (io/resource "404.html")))))
-
-(defrecord Program [title constraints])
