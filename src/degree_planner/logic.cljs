@@ -12,9 +12,11 @@
 (defrecord Solution [title satisfied course-set])
 
 (defn has-failures? [solutions]
-  (every? identity (map :satisfied solutions)))
+  "Checks whether a list of Solutions has any unsatisfied"
+  (not-every? identity (map :satisfied solutions)))
 
 (defn try-combinations [planned-courses title combinations constraints]
+  "Returns a list of Solutions"
   (match [combinations constraints]
          ; no combinations or constraints
          [([] :seq) ([] :seq)] '()
@@ -36,6 +38,7 @@
              (recur planned-courses title combs constraints))))
 
 (defn solve [planned-courses constraints]
+  "Returns a list of Solutions given lists of planned courses and constraints"
   (if (empty? constraints)
     '()
     (let [first-constraint-combinations ((:generator (first constraints)) planned-courses)]
@@ -45,10 +48,12 @@
                         (rest constraints)))))
 
 (defn rule->generator [rule-type course-set params]
+  "Generators take in a list of planned courses and return a (possibly lazy) list of viable combinations"
   (match [rule-type course-set params]
-         [:one-of _ _] #(list (intersection course-set %))
+         [:one-of _ _] #(let [viable (intersection course-set %)]
+                          (if (empty? viable) '() (list viable)))
          [:all-of _ _] #(if (subset? course-set %) (list course-set) '())
-         [:n-of _ {:n n}] #(combo/combinations (intersection course-set %) n)))
+         [:n-of _ {:n n}] #(map set (combo/combinations (intersection course-set %) n))))
 
 (defn rule->constraint [[rule-type title course-set params]]
   (Constraint. title (rule->generator rule-type course-set params)))

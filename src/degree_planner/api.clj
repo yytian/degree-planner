@@ -1,6 +1,7 @@
 (ns degree-planner.api
   (:require [liberator.core :refer [resource defresource]]
             [clojure.java.io :as io]
+            [clojure.set :refer [union]]
             [io.clojure.liberator-transit]
             [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
             [compojure.route :as route]
@@ -30,7 +31,8 @@
                     [:one-of "Probability" #{:STAT230 :STAT240}]
                     [:one-of "Statistics" #{:STAT231 :STAT241}]
                     [:all-of "Computer Science core" core]
-                    [:n-of "Three additional CS courses chosen from CS 340-398, 440-489" (course-range cs-courses :CS340 :CS398) {:n 3}]
+                    [:n-of "Three additional CS courses chosen from CS 340-398, 440-489"
+                     (union (course-range cs-courses :CS340 :CS398) (course-range cs-courses :CS440 :CS489)) {:n 3}]
                     [:n-of "Two additional CS courses chosen from CS 440-489" (course-range cs-courses :CS440 :CS489) {:n 2}]
                     ))})
 
