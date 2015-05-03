@@ -12,6 +12,12 @@
     </head>
     <body>
         <div id="my-app" class="container-fluid"></div>
+        <script type="application/javascript">
+            // http://stackoverflow.com/questions/17048914/saving-a-document-when-opened-with-window-open-in-chrome
+            function exportNewWindow(content) {
+                top.consoleRef=window.open('data:text/plain;base64,' + btoa(content), "exported");
+            }
+        </script>
         <script src="js/cljs-debug" type="application/javascript"></script>
     </body>
 </html>

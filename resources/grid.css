@@ -33,3 +33,7 @@ h4 {
 .failure {
   background-color: LightCoral;
 }
+
+body {
+  padding-top: 65px; /* Otherwise navbar overlays */
+}
