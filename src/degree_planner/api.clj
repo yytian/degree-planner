@@ -36,17 +36,24 @@
                     [:n-of "Two additional CS courses chosen from CS 440-489" (course-range cs-courses :CS440 :CS489) {:n 2}]
                     ))})
 
+(defn serve-file [path content-type]
+  (-> (resp/resource-response path) (resp/content-type content-type)))
+
 (defroutes app
   (GET "/api/courses/:dept" [dept] (resource :available-media-types ["application/transit+json"
                                                                      "application/transit+msgpack"
                                                                      "application/json"]
                                              :handle-ok (get course-lists dept)))
+  (GET "/api/departments" [] (resource :available-media-types ["application/transit+json"
+                                                               "application/transit+msgpack"
+                                                               "application/json"]
+                                       :handle-ok (seq departments)))
   (GET "/api/programs/:program" [program] (resource :available-media-types ["application/transit+json"
                                                                             "application/transit+msgpack"
                                                                             "application/json"]
                                                     :handle-ok bcs))
-  (GET "/" [] (-> (resp/resource-response "index.html") (resp/content-type "text/html")))
-  (GET "/dev" [] (-> (resp/resource-response "dev.html") (resp/content-type "text/html")))
-  (GET "/js/:script" [script] (-> (resp/resource-response (str "public/js/" script ".js")) (resp/content-type "application/javascript")))
-  (ANY "*" []
-       (route/not-found (slurp (io/resource "404.html")))))
+  (GET "/" [] (serve-file "index.html" "text/html"))
+  (GET "/dev" [] (serve-file "dev.html" "text/html"))
+  (GET "/js/:script" [script] (serve-file (str "public/js/" script ".js") "application/javascript"))
+  (GET "/grid.css" [] (serve-file "grid.css" "text/css"))
+  (ANY "*" [] (route/not-found (slurp (io/resource "404.html")))))

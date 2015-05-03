@@ -25,7 +25,7 @@
     :offerings (process-offerings (re-find #"Offered:.*\]" (pr-str (:content course))))
   })
 
-(defn scrape []
-  (doseq [dep ["CS" "MATH" "CO" "PMATH" "STAT" "AMATH"]]
+(defn scrape [deps]
+  (doseq [dep deps]
     (with-open [wrtr (io/writer (str "data/courses/" dep "-courses.edn"))]
       (.write wrtr (pr-str (map #(read-course % dep) (courses dep)))))))

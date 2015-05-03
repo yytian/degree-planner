@@ -2,7 +2,6 @@
   (:require [cognitect.transit :as transit]
             [degree-planner.combinatorics :as combo]
             [cljs.core.match :refer-macros [match]]
-            [ajax.core :refer [GET]]
             [clojure.set :refer [intersection difference union subset?]]))
 
 (defrecord Program [title constraints])
@@ -11,15 +10,15 @@
 
 (defrecord Solution [title satisfied course-set])
 
-(defn has-failures? [solutions]
+(defn all-satisfied? [solutions]
   "Checks whether a list of Solutions has any unsatisfied"
-  (not-every? :satisfied solutions))
+  (every? :satisfied solutions))
 
 (defn try-combinations [planned-courses title combinations constraints]
   "Returns a list of Solutions"
   (match [combinations constraints]
          ; no combinations or constraints
-         [([] :seq) ([] :seq)] '()
+         [([] :seq) ([] :seq)] (list (Solution. title false #{}))
          ; no combinations
          [([] :seq) _] (conj (solve planned-courses constraints) (Solution. title false #{}))
          ; no constraints
@@ -32,11 +31,9 @@
            (if (subset? comb planned-courses)
              (let [remaining-courses (difference planned-courses comb) ; after choosing first comb
                    first-combination-solutions (solve remaining-courses constraints)]
-               (if (has-failures? first-combination-solutions)
-                 (if (empty? combs)
-                   (conj first-combination-solutions (Solution. title true comb)) ; No other choice, might as well take one
-                   (recur planned-courses title combs constraints)) ; See if other combs might work
-                 (conj first-combination-solutions (Solution. title true comb))))
+               (if (or (all-satisfied? first-combination-solutions) (empty? combs))
+                   (conj first-combination-solutions (Solution. title true comb))
+                   (recur planned-courses title combs constraints)))
              (recur planned-courses title combs constraints))))
 
 (defn solve [planned-courses constraints]
@@ -65,11 +62,3 @@
 
 (defn check-program [program planned-courses]
   (solve planned-courses (:constraints program)))
-
-(def cs-courses)
-(def bcs)
-(def temp)
-
-(GET "api/courses/CS" {:handler #(set! cs-courses %) })
-(GET "api/programs/BCS" {:handler #(do (set! bcs %) (set! temp (check-program (definition->program bcs)
-                                                                              (set (map :id cs-courses))))) })

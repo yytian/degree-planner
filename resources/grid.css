@@ -1,0 +1,35 @@
+h4 {
+  margin-top: 25px;
+}
+.row {
+  margin-left: 0px; /* override from bootstrap */
+  margin-right: 0px; /* override */
+  margin-bottom: 20px;
+}
+.row .row {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+[class*="col-"] {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #eee;
+  background-color: rgba(86,61,124,.15);
+  border: 1px solid #ddd;
+  border: 1px solid rgba(86,61,124,.2);
+}
+[class*="col-"].rows-container {
+  padding-top: 5px; /* since rows have margin-top: 10px */
+}
+
+.leading-icon {
+  margin-right: 5px;
+}
+
+.success {
+  background-color: Chartreuse;
+}
+
+.failure {
+  background-color: LightCoral;
+}
