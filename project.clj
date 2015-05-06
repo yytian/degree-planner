@@ -17,6 +17,7 @@
                  [ring/ring-jetty-adapter "1.3.2"]
                  [ring/ring-devel "1.3.2"]
                  [ring-basic-authentication "1.0.5"]
+                 [environ "1.0.0"]
                  [enlive "1.1.5"]
                  [quiescent "0.2.0-alpha1"]]
   :cljsbuild {
@@ -34,7 +35,9 @@
             :optimizations :advanced
             :pretty-print false}}}}
   :min-lein-version "2.0.0"
-  :plugins [[lein-cljsbuild "1.0.5"]]
+  :plugins [[environ/environ.lein "0.2.1"]
+            [lein-cljsbuild "1.0.5"]]
+  :hooks [environ.leiningen.hooks]
   :main degree-planner.web
   :jvm-opts ["-Djava.awt.headless=true"]
   :source-paths ["src"]
