@@ -36,10 +36,8 @@
             :pretty-print false}}}}
   :min-lein-version "2.0.0"
   :plugins [[environ/environ.lein "0.2.1"]
+            [lein-ring "0.9.3"]
             [lein-cljsbuild "1.0.5"]]
   :hooks [environ.leiningen.hooks]
-  :profiles {:uberjar {:aot :all}}
-  :main degree-planner.web
-  :jvm-opts ["-Djava.awt.headless=true"]
-  :source-paths ["src"]
-  :uberjar-name "degree-planner-standalone.jar")
+  :ring {:handler degree-planner.api/app}
+  :source-paths ["src"])
