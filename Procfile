@@ -1,1 +1,1 @@
-web: lein trampoline run -m degree-planner.web
+web: java $JVM_OPTS -cp target/degree-planner-standalone.jar clojure.main -m degree-planner.web

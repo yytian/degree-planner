@@ -38,6 +38,7 @@
   :plugins [[environ/environ.lein "0.2.1"]
             [lein-cljsbuild "1.0.5"]]
   :hooks [environ.leiningen.hooks]
+  :profiles {:uberjar {:aot :all}}
   :main degree-planner.web
   :jvm-opts ["-Djava.awt.headless=true"]
   :source-paths ["src"]
