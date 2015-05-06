@@ -17,7 +17,6 @@
                  [ring/ring-jetty-adapter "1.3.2"]
                  [ring/ring-devel "1.3.2"]
                  [ring-basic-authentication "1.0.5"]
-                 [environ "1.0.0"]
                  [enlive "1.1.5"]
                  [quiescent "0.2.0-alpha1"]]
   :cljsbuild {
@@ -28,21 +27,17 @@
             :output-to "resources/public/js/cljs-debug.js"
             :optimizations :whitespace
             :pretty-print true }}
-        :prod
+        :production
         {:source-paths ["src"]
          :compiler {
             :output-to "resources/public/js/cljs.js"
             :optimizations :advanced
             :pretty-print false}}}}
   :min-lein-version "2.0.0"
-  :plugins [[environ/environ.lein "0.2.1"]
-            [lein-cljsbuild "1.0.5"]]
-  :hooks [environ.leiningen.hooks]
+  :plugins [[lein-cljsbuild "1.0.5"]]
   :main degree-planner.web
   :jvm-opts ["-Djava.awt.headless=true"]
   :source-paths ["src"]
-  :uberjar-name "degree-planner-standalone.jar"
-  :profiles {:production {:env {:production true}}
-             :dev {:source-paths ["dev"]}})
+  :uberjar-name "degree-planner-standalone.jar")
 
 ;; https://groups.google.com/forum/#!topic/clojurescript/4Y8OWUl6u_Y
