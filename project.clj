@@ -42,5 +42,3 @@
   :jvm-opts ["-Djava.awt.headless=true"]
   :source-paths ["src"]
   :uberjar-name "degree-planner-standalone.jar")
-
-;; https://groups.google.com/forum/#!topic/clojurescript/4Y8OWUl6u_Y
