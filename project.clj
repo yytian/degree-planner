@@ -2,22 +2,14 @@
 
 (defproject degree-planner "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
-  :url "http://degree-planner.herokuapp.com"
+  :url "http://student.cs.uwaterloo.ca/~yytian"
   :license {:name "FIXME: choose"
             :url "http://example.com/FIXME"}
-  :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-3126"]
+  :dependencies [[org.clojure/clojure "1.7.0"]
+                 [org.clojure/clojurescript "1.7.48"]
                  [org.clojure/core.match "0.3.0-alpha4"]
-                 [com.cognitect/transit-cljs "0.8.207"]
-                 [cljs-ajax "0.3.11"]
-                 [clj-http "1.1.1"]
-                 [liberator "0.12.0"]
-                 [io.clojure/liberator-transit "0.3.0"]
-                 [compojure "1.3.3"]
-                 [ring/ring-jetty-adapter "1.3.2"]
-                 [ring/ring-devel "1.3.2"]
-                 [ring-basic-authentication "1.0.5"]
-                 [environ "1.0.0"]
+                 [com.cognitect/transit-cljs "0.8.220"]
+                 [cljs-ajax "0.3.14"]
                  [enlive "1.1.5"]
                  [quiescent "0.2.0-alpha1"]]
   :cljsbuild {
@@ -35,9 +27,5 @@
             :optimizations :advanced
             :pretty-print false}}}}
   :min-lein-version "2.0.0"
-  :plugins [[environ/environ.lein "0.2.1"]
-            [lein-ring "0.9.3"]
-            [lein-cljsbuild "1.0.5"]]
-  :hooks [environ.leiningen.hooks]
-  :ring {:handler degree-planner.api/app}
+  :plugins [[lein-cljsbuild "1.0.6"]]
   :source-paths ["src"])

@@ -2,6 +2,7 @@
   (:require [quiescent.core :as q]
             [quiescent.dom :as d]
             [degree-planner.logic :as logic]
+            [degree-planner.data :as data]
             [clojure.string :as string]
             [ajax.core :refer [GET]]))
 
@@ -15,7 +16,7 @@
                           :course-defs-by-dept {}
                           :course-defs-by-id {}}))
 
-(defonce departments nil)
+(defonce departments data/departments)
 (defonce course-defs-by-dept {})
 (defonce course-defs-by-id {})
 
@@ -30,16 +31,11 @@
                         (assoc % key (transform old-value))))
     (when to-render (rerender!))))
 
-(GET "api/departments"
-     {:handler (fn [depts]
-                 (do (set! departments (set depts))
-                   (doseq [dept depts]
-                     (GET (str "api/courses/" dept)
-                          {:handler (fn [courses]
-                                      (do
-                                        (set! course-defs-by-dept (assoc course-defs-by-dept (keyword dept) courses) false)
-                                        (doseq [course courses]
-                                          (set! course-defs-by-id (assoc course-defs-by-id (:id course) course) false))))}))))})
+(doseq [dept departments]
+  (let [courses ((keyword dept) data/courses)]
+    (set! course-defs-by-dept (assoc course-defs-by-dept (keyword dept) courses false))
+    (doseq [course courses]
+      (set! course-defs-by-id (assoc course-defs-by-id (:id course) course) false))))
 
 (defn text-input [key {id :id placeholder :placeholder maxLength :maxLength change-hook :change-hook to-render :to-render}]
   (d/input {:type "text" :id id :className "form-control" :placeholder placeholder :maxLength maxLength
@@ -121,4 +117,4 @@
 
 (set-state! :courses #{:CS135 :CS136 :MATH135 :MATH239 :STAT231 :CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350} true)
 
-(GET "api/programs/BCS" {:handler #(set-state! :program (logic/definition->program %) true)})
+(set-state! :program (logic/definition->program data/bcs) true)
