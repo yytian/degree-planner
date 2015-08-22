@@ -70,7 +70,7 @@
                 (let [icon-class (if (contains? departments (string/upper-case department-input))
                                    "glyphicon glyphicon-ok" "glyphicon glyphicon-remove")]
                   (d/span {:className (str "input-group-addon " icon-class)}))
-                (text-input :course-number-input {:placeholder "Enter a course number"}))
+                (text-input :course-number-input {:placeholder "Enter a course number" :maxLength 4 :to-render true}))
          (SearchView [courses department-input course-number-input] course-defs-by-dept)))
 
 (q/defcomponent SolutionView [solution]
@@ -79,7 +79,7 @@
         row-class (if (:satisfied solution) "success" "failure")]
     (d/div {:className (str "solution row " row-class)}
            icon
-           (d/span nil (:title solution))
+           (d/span nil (:title solution) " ")
            (d/span nil (string/join ", " (:course-set solution))))))
 
 (q/defcomponent SolutionsView [solutions]

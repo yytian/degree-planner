@@ -1,6 +1,8 @@
 (ns degree-planner.data
   (:require [clojure.set :refer [union]]))
 
+; consider using the UW API
+
 (def departments #{"AMATH" "CO" "CS" "MATH" "PMATH" "STAT"})
 
 (def courses
@@ -19,21 +21,30 @@
 
 (def bcs {:title "Bachelor of Computer Science"
           :rules (let [core #{:CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350}
-                       cs-courses (:CS courses)]
+                       cs-courses (:CS courses)
+                       range1 (course-range cs-courses :CS340 :CS398)
+                       range2 (course-range cs-courses :CS440 :CS489)
+                       range3 (course-range cs-courses :CS600 :CS799)] ; range3 has no data atm
                    (vector
-                    [:one-of "CS 1x5 series" #{:CS115 :CS135 :CS145}]
-                    [:one-of "CS 1x6 series" #{:CS136 :CS146}]
+                    [:one-of "CS first course" #{:CS115 :CS135 :CS145}]
+                    [:one-of "CS second course" #{:CS136 :CS146}]
                     [:one-of "Calculus 1" #{:MATH127 :MATH137 :MATH147}]
                     [:one-of "Calculus 2" #{:MATH128 :MATH138 :MATH148}]
                     [:one-of "Algebra" #{:MATH135 :MATH145}]
                     [:one-of "Linear Algebra 1" #{:MATH136 :MATH146}]
-                    [:one-of "Introduction to Combinatorics" #{:MATH239 :MATH249}]
+                    [:one-of "Intro Combinatorics" #{:MATH239 :MATH249}]
                     [:one-of "Probability" #{:STAT230 :STAT240}]
                     [:one-of "Statistics" #{:STAT231 :STAT241}]
                     [:all-of "Computer Science core" core]
                     [:n-of "Three additional CS courses chosen from CS 340-398, 440-489"
-                     (union (course-range cs-courses :CS340 :CS398) (course-range cs-courses :CS440 :CS489)) {:n 3}]
-                    [:n-of "Two additional CS courses chosen from CS 440-489" (course-range cs-courses :CS440 :CS489) {:n 2}]
+                     (union range1 range2) {:n 3}]
+                    [:n-of "Two additional CS courses chosen from CS 440-489" range2 {:n 2}]
+                    [:one-of "One additional course" (union #{:CO487 :CS499T :STAT440} range2 range3)]
+                    ; Two of the following
+                    [:one-of "Systems and SE" #{:CS343 :CS349 :CS442 :CS444 :CS445 :CS446 :CS447 :CS450 :CS452 :CS454 :CS456 :CS457 :CS458}]
+                    [:one-of "Applications" #{:CS348 :CS448 :CS449 :CS473 :CS476 :CS482 :CS484 :CS485 :CS486 :CS488}]
+                    [:one-of "Mathematical foundations of CS"
+                     #{:CS360 :CS365 :CS370 :CS371 :CS462 :CS466 :CS467 :CS475 :CS487}]
                     ))})
 
 ; scraped data copy-pasted from resources/data/courses
