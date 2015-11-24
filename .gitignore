@@ -3,7 +3,7 @@ pom.xml.asc
 *jar
 /lib/
 /classes/
-/resources/public
+/resources/public/js
 /target/
 /checkouts/
 .lein-deps-sum
@@ -12,3 +12,4 @@ pom.xml.asc
 .lein-plugins/
 .lein-failures
 .nrepl-port
+figwheel_server.log

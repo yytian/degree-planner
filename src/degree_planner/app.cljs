@@ -16,9 +16,14 @@
                           :course-defs-by-dept {}
                           :course-defs-by-id {}}))
 
+(declare rerender!)
+
 (defonce departments data/departments)
 (defonce course-defs-by-dept {})
 (defonce course-defs-by-id {})
+
+(defn get-state [key]
+  (key @app-state))
 
 (defn set-state! [key new-value to-render]
   (do
@@ -115,6 +120,8 @@
   (q/render (RootView @app-state)
             (.getElementById js/document "my-app")))
 
-(set-state! :courses #{:CS135 :CS136 :MATH135 :MATH239 :STAT231 :CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350} true)
+(when (nil? (get-state :courses))
+  (set-state! :courses #{:CS135 :CS136 :MATH135 :MATH239 :STAT231 :CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350} true))
 
-(set-state! :program (logic/definition->program data/bcs) true)
+(when (nil? (get-state :program))
+  (set-state! :program (logic/definition->program data/bcs) true))

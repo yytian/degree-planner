@@ -1,7 +1,7 @@
 (ns degree-planner.data
   (:require [clojure.set :refer [union]]))
 
-; consider using the UW API
+; consider using the UW API for this
 
 (def departments #{"AMATH" "CO" "CS" "MATH" "PMATH" "STAT"})
 
