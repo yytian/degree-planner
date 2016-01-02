@@ -8,7 +8,6 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.7.170"]
                  [org.clojure/core.match "0.3.0-alpha4"]
-                 [com.cognitect/transit-cljs "0.8.225"]
                  [cljsjs/pako "0.2.7-0"] ; Thank god someone did the interop so that I don't have to!
                  [cljs-ajax "0.3.14"]
                  [com.cemerick/url "0.1.1"]

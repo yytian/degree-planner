@@ -20,6 +20,7 @@
   (set (->> source (map :id) (filter #(<= (compare % right) 0 (compare % left))))))
 
 (def bcs {:title "Bachelor of Computer Science"
+          :link "MATH-Bachelor-of-Computer-Science-1"
           :rules (let [core #{:CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350}
                        cs-courses (:CS courses)
                        range1 (course-range cs-courses :CS340 :CS398)

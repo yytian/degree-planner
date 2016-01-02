@@ -1,10 +1,9 @@
 (ns degree-planner.logic
-  (:require [cognitect.transit :as transit]
-            [degree-planner.combinatorics :as combo]
+  (:require [degree-planner.combinatorics :as combo]
             [cljs.core.match :refer-macros [match]]
             [clojure.set :refer [intersection difference union subset?]]))
 
-(defrecord Program [title constraints])
+(defrecord Program [title link constraints])
 
 (defrecord Constraint [title generator])
 
@@ -13,6 +12,8 @@
 (defn all-satisfied? [solutions]
   "Checks whether a list of Solutions has any unsatisfied"
   (every? :satisfied solutions))
+
+(declare solve)
 
 (defn try-combinations [planned-courses title combinations constraints]
   "Returns a list of Solutions"
@@ -58,6 +59,7 @@
 
 (defn definition->program [definition]
   (Program. (:title definition)
+            (:link definition)
             (map rule->constraint (:rules definition))))
 
 (defn check-program [program planned-courses]
