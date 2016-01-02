@@ -4,9 +4,15 @@
             [degree-planner.logic :as logic]
             [degree-planner.data :as data]
             [clojure.string :as string]
+            [cljs.pprint :refer [pprint]]
+            [cljs.reader :as reader]
+            [cljsjs.pako :as pako]
+            [cemerick.url :as url]
             [ajax.core :refer [GET]]))
 
 ; TODO: replace "courses" with "course-ids"
+
+(enable-console-print!)
 
 (defonce app-state (atom {:courses nil
                           :show-planned false
@@ -61,10 +67,14 @@
                       :onClick (fn [e] (transform-state! :courses #(conj % course-id) true))} "Select"))))
 
 (q/defcomponent SearchView [[courses department-input course-number-input]]
-  (when (contains? departments department-input)
+  (if (contains? departments department-input)
     (let [dept-courses (get course-defs-by-dept (keyword department-input))
           search-results (filter (partial course-search-filter (str department-input course-number-input) courses) dept-courses)]
-      (apply d/div {:id "search-results"} (map #(CourseView [false (:id %)]) search-results)))))
+      (apply d/div {:id "search-results"} (map #(CourseView [false (:id %)]) search-results)))
+    (when (string/blank? department-input)
+      (let [all-courses (apply concat (vals course-defs-by-dept))
+            sorted-courses (sort-by :id all-courses)]
+        (apply d/div {:id "search-results"} (map #(CourseView [false (:id %)]) sorted-courses))))))
 
 (q/defcomponent CoursesView [[show-planned courses department-input course-number-input]]
   (d/div {:id "courses-view" :className "col-md-6 rows-container"}
@@ -84,8 +94,10 @@
         row-class (if (:satisfied solution) "success" "failure")]
     (d/div {:className (str "solution row " row-class)}
            icon
-           (d/span nil (:title solution) " ")
-           (d/span nil (string/join ", " (:course-set solution))))))
+           (d/span nil (:title solution) ": ")
+           (let [course-ids (map name (:course-set solution))
+                 to-print (string/join ", " course-ids)]
+             (d/span nil to-print)))))
 
 (q/defcomponent SolutionsView [solutions]
   (apply d/div {:className "solutions"} (map SolutionView solutions)))
@@ -95,23 +107,22 @@
          (d/div nil (:title program))
          (SolutionsView (logic/check-program program courses))))
 
-(q/defcomponent NavView []
+(q/defcomponent NavView [courses]
   (d/nav {:className "navbar navbar-default navbar-fixed-top"}
          (d/div {:className "container-fluid"}
                 (d/button {:type "button" :className "btn btn-default navbar-btn"
                            :onClick (fn [e] (transform-state! :show-planned not true))} "Show/hide planned courses")
-                (d/label {:className "btn btn-default" :htmlFor "import"}
-                         ; thanks http://stackoverflow.com/questions/11235206/twitter-bootstrap-form-file-element-upload-button/25053973#25053973
-                         (d/input {:type "file" :id "import" :style {:display "none"}} "Import"))
-                (d/button {:type "button" :className "btn btn-default navbar-btn"
-                           :onClick (fn [e] (.exportNewWindow js/window
-                                                              (str (println-str ";; Download this file for later import") \newline
-                                                                   (pr-str (map :id (:courses @app-state))))))}
-                          "Export"))))
+                (d/a {:type "button" :className "btn btn-default navbar-btn"
+                      :href (str (-> js/window .-location .-href)
+                                 "?courses="
+                                 (.deflate js/pako (pr-str courses)))}
+                     "Permanent Link")
+                (d/a {:type "button" :className "btn btn-default navbar-btn" :href "https://github.com/~yytian"}
+                     "Source Code"))))
 
 (q/defcomponent RootView [app]
   (d/div {:id "root"}
-         (NavView)
+         (NavView (:courses app))
          (d/div {:className "row"}
                 (CoursesView [(:show-planned app) (:courses app) (:department-input app) (:course-number-input app)])
                 (ProgramView [(:program app) (:courses app)]))))
@@ -120,8 +131,21 @@
   (q/render (RootView @app-state)
             (.getElementById js/document "my-app")))
 
+(defn query-data->courses [data]
+  (let [query-array (clj->js (string/split data ","))
+        inflated-array ((-> js/window .-Array .-from) (.inflate js/pako query-array))
+        inflated-list (js->clj inflated-array)
+        inflated-string (->> inflated-list (map char) (apply str))]
+    (reader/read-string inflated-string)))
+
 (when (nil? (get-state :courses))
-  (set-state! :courses #{:CS135 :CS136 :MATH135 :MATH239 :STAT231 :CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350} true))
+  (let [url (url/url (-> js/window .-location .-href))
+        query-data (get (:query url) "courses")]
+    (if (string/blank? query-data)
+      (set-state! :courses #{:CS135 :CS136 :MATH135 :MATH239 :STAT231 :CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350} true)
+      (set-state! :courses (query-data->courses query-data) true))))
 
 (when (nil? (get-state :program))
   (set-state! :program (logic/definition->program data/bcs) true))
+
+(rerender!)
