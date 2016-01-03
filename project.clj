@@ -16,25 +16,25 @@
   :clean-targets [:target-path "out" "resources/public/js"]
   :cljsbuild {
     :builds [{:id "dev"
-              :source-paths ["src"]
+              :source-paths ["src" "test"]
               :compiler {:main "degree-planner.app"
-              :asset-path "js/dev"
-              :output-to "resources/public/js/cljs-debug.js"
-              :output-dir "resources/public/js/dev"
-              :optimizations :none
-              :pretty-print true
-              :source-map true
-              :source-map-timestamp true
-              :cache-analysis true }
-              :figwheel true }
+                         :asset-path "js/dev"
+                         :output-to "resources/public/js/cljs-debug.js"
+                         :output-dir "resources/public/js/dev"
+                         :optimizations :none
+                         :pretty-print true
+                         :source-map true
+                         :source-map-timestamp true
+                         :cache-analysis true }
+              :figwheel {:on-jsload "degree-planner.test-runner/run"} }
              {:id "prod"
               :source-paths ["src"]
               :compiler {:main "degree-planner.app"
-              :asset-path "js/prod"
-              :output-to "resources/public/js/cljs.js"
-              :output-dir "resources/public/js/prod"
-              :optimizations :advanced
-              :pretty-print false}}]}
+                         :asset-path "js/prod"
+                         :output-to "resources/public/js/cljs.js"
+                         :output-dir "resources/public/js/prod"
+                         :optimizations :advanced
+                         :pretty-print false}}]}
   :min-lein-version "2.0.0"
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-1"]]

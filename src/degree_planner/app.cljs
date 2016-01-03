@@ -145,7 +145,7 @@
   (let [url (url/url (-> js/window .-location .-href))
         query-data (get (:query url) "courses")]
     (if (string/blank? query-data)
-      (set-state! :courses #{:CS135 :CS136 :MATH135 :MATH239 :STAT231 :CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350} true)
+      (set-state! :courses data/default-course-selection true)
       (set-state! :courses (query-data->courses query-data) true))))
 
 (when (nil? (get-state :program))

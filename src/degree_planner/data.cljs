@@ -48,4 +48,6 @@
                      #{:CS360 :CS365 :CS370 :CS371 :CS462 :CS466 :CS467 :CS475 :CS487}]
                     ))})
 
+(def default-course-selection #{:CS135 :CS136 :MATH135 :MATH239 :STAT231 :CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350})
+
 ; scraped data copy-pasted from resources/data/courses
