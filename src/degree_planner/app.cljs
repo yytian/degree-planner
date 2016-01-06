@@ -105,10 +105,23 @@
 (q/defcomponent SolutionsView [solutions]
   (apply d/div {:className "solutions"} (map SolutionView solutions)))
 
+(q/defcomponent ConditionView [[courses condition]]
+  (let [satisfied (logic/check-condition condition courses)
+        icon-class (if satisfied "glyphicon glyphicon-ok" "glyphicon glyphicon-remove")
+        icon (d/span {:className (str "leading-icon " icon-class)})
+        row-class (if satisfied "success" "failure")]
+    (d/div {:className (str "condition row " row-class)}
+           icon
+           (d/span nil (:title condition) ": "))))
+
+(q/defcomponent ConditionsView [[courses conditions]]
+  (apply d/div {:className "conditions"} (map #(ConditionView [courses %]) conditions)))
+
 (q/defcomponent ProgramView [[program courses]]
   (d/div {:id "program-view" :className "col-md-6"}
          (d/div nil (d/a {:href (str ugrad-calendar-link (:link program))} (:title program)))
-         (SolutionsView (logic/check-program program courses))))
+         (SolutionsView (logic/check-constraints (:constraints program) courses))
+         (ConditionsView [courses (:conditions program)])))
 
 (q/defcomponent NavView [courses]
   (d/nav {:className "navbar navbar-default navbar-fixed-top"}
