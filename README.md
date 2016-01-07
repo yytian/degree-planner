@@ -19,6 +19,6 @@ This starts a [Figwheel](https://github.com/bhauman/lein-figwheel) instance, whi
 
 ## License
 
-Copyright © 2015 Jim Tian
+Copyright © 2016 Jim Tian
 
 Distributed under the MIT license (see License.md).
