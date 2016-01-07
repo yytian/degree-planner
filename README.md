@@ -1,81 +1,24 @@
 # degree-planner
 
-A [Heroku](http://www.heroku.com) web app using Compojure.
+A web app which allows UW students to check whether their list of courses taken satisfies degree requirements. Currently, only the Bachelor of Computer Science degree is supported.
 
-This generated project has a few basics set up beyond the bare Compojure defaults:
+## Building
+This project is written in [ClojureScript](https://github.com/clojure/clojurescript) and managed using [Leiningen](https://github.com/technomancy/leiningen), which must be installed to build the project.
 
-* Cookie-backed session store
-* Stack traces when in development
-* Environment-based config via [environ](https://github.com/weavejester/environ)
-* [HTTP-based REPL debugging](https://devcenter.heroku.com/articles/debugging-clojure) via [drawbridge](https://github.com/cemerick/drawbridge)
+To deploy the web app, run the command:
 
-## Usage
+    $ lein cljsbuild once prod
 
-To start a local web server for development you can either eval the
-commented out forms at the bottom of `web.clj` from your editor or
-launch from the command line:
+This will run a production build (with compiler optimizations on, etc), outputting files to the resources/public directory. One can then serve this directory as normal static resources using any web server, and access the application at `index.html`.
 
-    $ lein run -m degree-planner.web
+For a more development-oriented workflow, run the command:
 
-Initialize a git repository for your project.
-
-    $ git init
-    $ git add .
-    $ git commit -m "Initial commit."
-
-You'll need the [heroku toolbelt](https://toolbelt.herokuapp.com)
-installed to manage the heroku side of your app. Once it's installed,
-get the app created:
-
-    $ heroku apps:create degree-planner
-    Creating degree-planner... done, stack is cedar
-    http://degree-planner.herokuapp.com/ | git@heroku.com:degree-planner.git
-    Git remote heroku added
-
-You can deploy the skeleton project immediately:
-
-    $ git push heroku master
-    Writing objects: 100% (13/13), 2.87 KiB, done.
-    Total 13 (delta 0), reused 0 (delta 0)
-
-    -----> Heroku receiving push
-    -----> Clojure app detected
-    -----> Installing Leiningen
-           Downloading: leiningen-2.0.0-preview7-standalone.jar
-    [...]
-    -----> Launching... done, v3
-           http://degree-planner.herokuapp.com deployed to Heroku
-
-    To git@heroku.com:degree-planner.git
-     * [new branch]      master -> master
-
-It's live! Hit it with `curl`:
-
-    $ curl http://degree-planner.herokuapp.com
-    ["Hello" :from Heroku]
-
-The cookie-backed session store needs a session secret configured for encryption:
-
-    $ heroku config:add SESSION_SECRET=$RANDOM_16_CHARS
-
-## Remote REPL
-
-The [devcenter article](https://devcenter.heroku.com/articles/debugging-clojure)
-has a detailed explanation, but using the `repl` task from Leiningen
-2.x lets you connect a REPL to a remote process over HTTP. The first
-step is setting up credentials:
-
-    $ heroku config:add REPL_USER=[...] REPL_PASSWORD=[...]
-
-Then you can launch the REPL:
-
-    $ lein repl :connect http://$REPL_USER:$REPL_PASSWORD@degree-planner.herokuapp.com/repl
-
-Everything you enter will be evaluated remotely in the running dyno,
-which can be very useful for debugging or inspecting live data.
+    $ lein figwheel
+    
+This starts a [Figwheel](https://github.com/bhauman/lein-figwheel) instance, which deploys a development build using a local server. The application can then be accessed at http://localhost:3449/dev.html. Figwheel will watch all `.cljs` source files, and when any are changed will recompile with the changes, which should be dynamically reflected in the application. It will also run the test suite on every recompile.
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2015 Jim Tian
 
-Distributed under the Eclipse Public License, the same as Clojure.
+Distributed under the MIT license (see License.md).
