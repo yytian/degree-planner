@@ -40,6 +40,7 @@
                     [:n-of "Three additional CS courses chosen from CS 340-398, 440-489"
                      (union range1 range2) {:n 3}]
                     [:n-of "Two additional CS courses chosen from CS 440-489" range2 {:n 2}]
+                    ; Needs to include CS 600-700 courses
                     [:one-of "One additional course" (union #{:CO487 :CS499T :STAT440} range2 range3)]
                     ))
           :conditions (vector

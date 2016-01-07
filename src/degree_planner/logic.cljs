@@ -14,8 +14,10 @@
 
 (declare solve)
 
+; Try to make the algorithm cleaner if at all possible
+
 (defn try-combinations [planned-courses title combinations constraints]
-  "Returns a list of Solutions"
+  "Returns a list of Solutions given a list of planned courses, the name of the current Constraint, the viable combinations for the current Constraint, and a list of remaining Constraints."
   (match [combinations constraints]
          ; no combinations or constraints
          [([] :seq) ([] :seq)] (list (Solution. title false #{}))

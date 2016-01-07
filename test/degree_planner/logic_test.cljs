@@ -88,9 +88,9 @@
                         ))
 
 (deftest bcs-complete
-  (test-plan-on-program bcs-program #{:CS135 :CS136 :MATH135 :MATH146 :MATH147 :MATH148 :MATH235 :MATH247
-                                      :MATH239 :CO255 :STAT240 :STAT231 :CS240 :CS241 :CS245 :CS246 :CS251
-                                      :CS341 :CS350 :CS365 :CS370 :CS444 :CS452 :CS454}
+  (test-plan-on-program bcs-program #{:CS145 :CS146 :MATH145 :MATH146 :MATH147 :MATH148 :MATH235 :MATH247
+                                      :MATH249 :CO255 :STAT230 :STAT241 :CS240 :CS241 :CS245 :CS246 :CS251
+                                      :CS341 :CS350 :CS365 :CS371 :CS444 :CS452 :CS454 :CS466}
                         {
                          "CS first course" true
                          "CS second course" true
