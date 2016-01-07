@@ -5,7 +5,7 @@
 
 (defrecord Program [title link constraints conditions])
 (defrecord Constraint [title generator])
-(defrecord Condition [title checker])
+(defrecord Condition [title checker subconditions])
 (defrecord Solution [title satisfied course-set])
 
 (defn all-satisfied? [solutions]
@@ -48,30 +48,32 @@
                         first-constraint-combinations
                         (rest constraints)))))
 
-(defn make-generator [rule-type course-set params]
+(defn make-generator [rule-type constituents params]
   "Generators take in a list of planned courses and return a (possibly lazy) list of combinations that are viable for the associated Constraint."
-  (match [rule-type course-set params]
-         [:one-of _ _] #(combo/split-set (intersection course-set %))
-         [:all-of _ _] #(if (subset? course-set %) (list course-set) '())
-         [:n-of _ {:n n}] #(map set (combo/combinations (intersection course-set %) n))))
+  (match [rule-type constituents params]
+         [:one-of _ _] #(combo/split-set (intersection constituents %))
+         [:all-of _ _] #(if (subset? constituents %) (list constituents) '())
+         [:n-of _ {:n n}] #(map set (combo/combinations (intersection constituents %) n))))
 
-(defn make-constraint [[rule-type title course-set params]]
+(defn make-constraint [[rule-type title constituents params]]
   "Constraints are rules which must be satisfied by a course set, where no course can be used in more than one Constraint in a set of Constraints."
-  (Constraint. title (make-generator rule-type course-set params)))
+  (Constraint. title (make-generator rule-type constituents params)))
 
 (defn count-courses-contained [planned-courses course-set]
   (count (filter #(contains? planned-courses %) course-set)))
 
-(defn make-checker [rule-type course-set params]
-  "Checkers take in a list of planned courses and returns its viability for the associated Condition."
-  (match [rule-type course-set params]
-         [:one-of _ _] #(>= (count-courses-contained % course-set) 1)
-         [:all-of _ _] #(>= (count-courses-contained % course-set) (count course-set))
-         [:n-of _ {:n n}] #(>= (count-courses-contained % course-set) n)))
+(defn count-conditions-met [planned-courses conditions]
+  (count (->> conditions (map #((:checker %) planned-courses)) (filter identity))))
 
-(defn make-condition [[rule-type title course-set params]]
-  "Conditions are rules which must be satisfied by a course set, but which does not affect other Conditions or Constraints."
-  (Condition. title (make-checker rule-type course-set params)))
+(defn make-condition [[rule-type title constituents params]]
+  "Conditions are rules which must be satisfied by a course set, but which does not affect other Conditions or Constraints.
+  Checkers take in a list of planned courses and returns its viability for the associated Condition."
+  (match [rule-type constituents params]
+         [:one-of _ _] (Condition. title #(>= (count-courses-contained % constituents) 1) [])
+         [:all-of _ _] (Condition. title #(>= (count-courses-contained % constituents) (count constituents)) [])
+         [:n-of _ {:n n}] (Condition. title #(>= (count-courses-contained % constituents) n) [])
+         [:meta-n-of condition-defs {:n n}] (let [subconditions (map make-condition condition-defs)]
+                                              (Condition. title #(>= (count-conditions-met % subconditions) n) subconditions))))
 
 (defn definition->program [definition]
   (Program. (:title definition)

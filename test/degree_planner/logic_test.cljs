@@ -8,10 +8,11 @@
 (defn strict-every? [pred coll]
   (and (seq coll) (every? pred coll)))
 
-(defn constraint-satisfied? [solutions constraint-name]
-  (->> solutions
-       (filter #(= (:title %) constraint-name))
-       (strict-every? :satisfied)))
+(defn find-by-title [coll title]
+  (let [results (filter #(= (:title %) title) coll)]
+    (if (= (count results) 1)
+      (first results)
+      (throw (js/Error. (str "Expected one titled " name ", but found " (count results) "."))))))
 
 (defn test-constraints [constraints planned-courses expectations]
   (let [solutions (check-constraints constraints planned-courses)]
@@ -20,19 +21,22 @@
         (is (count solutions) (count expectations)))
       (doseq [[constraint-name expected-val] expectations]
               (testing (str "to be " expected-val " for " constraint-name)
-                (is (= (constraint-satisfied? solutions constraint-name) expected-val)))))))
-
-(defn condition-satisfied? [conditions planned-courses condition-name]
-  (->> conditions
-       (filter #(= (:title %) condition-name))
-       (strict-every? #(check-condition % planned-courses))))
+                (is (= (:satisfied (find-by-title solutions constraint-name)) expected-val)))))))
 
 (defn test-conditions [conditions planned-courses expectations]
   (testing "for conditions"
     (testing "to have the expected number" (is (count conditions) (count expectations)))
     (doseq [[condition-name expected-val] expectations]
-            (testing (str "to be " expected-val " for " condition-name)
-              (is (= (condition-satisfied? conditions planned-courses condition-name) expected-val))))))
+      (let [condition (find-by-title conditions condition-name)
+              subconditions (:subconditions condition)]
+        (if (vector? expected-val)
+          ;; Case where expected val is [value subcondition-expectations]
+          (testing (str "to be " (first expected-val) " for " condition-name)
+            (is (= (check-condition condition planned-courses) (first expected-val)))
+            (test-conditions subconditions planned-courses (second expected-val)))
+          ;; Case where expected val is plain value
+          (testing (str "to be " expected-val " for " condition-name)
+            (is (= (check-condition condition planned-courses) expected-val))))))))
 
 (defn test-plan-on-program [program planned-courses constraints-expectations conditions-expectations]
   "Must be used within a deftest."
@@ -57,9 +61,9 @@
        "One additional course" false
        }
       {
-       "Systems and SE" false
-       "Applications" false
-       "Mathematical foundations of CS" false
+       "Two of the following" [false {"Systems and SE" false
+                                      "Applications" false
+                                      "Mathematical foundations of CS" false}]
        }
       ))
 
@@ -81,9 +85,9 @@
                          "One additional course" false
                          }
                         {
-                         "Systems and SE" false
-                         "Applications" false
-                         "Mathematical foundations of CS" false
+                         "Two of the following" [false {"Systems and SE" false
+                                      "Applications" false
+                                      "Mathematical foundations of CS" false}]
                          }
                         ))
 
@@ -107,8 +111,8 @@
                          "One additional course" true
                          }
                         {
-                         "Systems and SE" true
-                         "Applications" true
-                         "Mathematical foundations of CS" true
+                         "Two of the following" [true {"Systems and SE" true
+                                      "Applications" false
+                                      "Mathematical foundations of CS" true}]
                          }
                         ))

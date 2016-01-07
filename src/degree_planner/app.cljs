@@ -113,7 +113,8 @@
         row-class (if satisfied "success" "failure")]
     (d/div {:className (str "condition row " row-class)}
            icon
-           (d/span nil (:title condition) ": "))))
+           (d/span nil (:title condition))
+           (apply d/div {:className "indent"} (map #(ConditionView [planned %]) (:subconditions condition))))))
 
 (q/defcomponent ConditionsView [[planned conditions]]
   (apply d/div {:className "conditions"} (map #(ConditionView [planned %]) conditions)))
@@ -121,8 +122,12 @@
 (q/defcomponent ProgramView [[program planned]]
   (d/div {:id "program-view" :className "col-md-6"}
          (d/div nil (d/a {:href (str ugrad-calendar-link (:link program))} (:title program)))
-         (SolutionsView (logic/check-constraints (:constraints program) planned))
-         (ConditionsView [planned (:conditions program)])))
+         (d/div {:className "row"}
+                "Constraints:"
+                (SolutionsView (logic/check-constraints (:constraints program) planned)))
+         (d/div {:className "row"}
+                "Conditions:"
+                (ConditionsView [planned (:conditions program)]))))
 
 (q/defcomponent NavView [[show-help planned]]
   (d/nav {:className "navbar navbar-default navbar-fixed-top"}

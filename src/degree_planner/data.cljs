@@ -44,11 +44,11 @@
                     [:one-of "One additional course" (union #{:CO487 :CS499T :STAT440} range2 range3)]
                     ))
           :conditions (vector
-                                        ; Two of the following
-                       [:one-of "Systems and SE" #{:CS343 :CS349 :CS442 :CS444 :CS445 :CS446 :CS447 :CS450 :CS452 :CS454 :CS456 :CS457 :CS458}]
-                       [:one-of "Applications" #{:CS348 :CS448 :CS449 :CS473 :CS476 :CS482 :CS484 :CS485 :CS486 :CS488}]
-                       [:one-of "Mathematical foundations of CS"
-                        #{:CS360 :CS365 :CS370 :CS371 :CS462 :CS466 :CS467 :CS475 :CS487}])})
+                       [:meta-n-of "Two of the following"
+                        [[:one-of "Systems and SE" #{:CS343 :CS349 :CS442 :CS444 :CS445 :CS446 :CS447 :CS450 :CS452 :CS454 :CS456 :CS457 :CS458}]
+                         [:one-of "Applications" #{:CS348 :CS448 :CS449 :CS473 :CS476 :CS482 :CS484 :CS485 :CS486 :CS488}]
+                         [:one-of "Mathematical foundations of CS" #{:CS360 :CS365 :CS370 :CS371 :CS462 :CS466 :CS467 :CS475 :CS487}]]
+                        {:n 2}])})
 
 (def default-course-selection #{:CS135 :CS136 :MATH135 :MATH239 :STAT231 :CS240 :CS241 :CS245 :CS246 :CS251 :CS341 :CS350})
 
